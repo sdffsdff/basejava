@@ -5,42 +5,43 @@ import java.util.Arrays;
  */
 public class ArrayStorage {
     Resume[] storage = new Resume[10000];
-    int index = -1;
+    int countResume = -1;
 
     void clear() {
-        index = -1;
+        for (int i = 0; i < countResume; i++) {
+            storage[i] = null;
+        }
+        countResume = -1;
     }
 
     void save(Resume r) {
-        index++;
-        storage[index] = r;
+        countResume++;
+        storage[countResume] = r;
 
     }
 
     Resume get(String uuid) {
-        Resume resume = null;
-        for (int i = 0; i <= index; i++) {
+        for (int i = 0; i <= countResume; i++) {
             if (storage[i].toString().equals(uuid)) {
-                resume = storage[i];
-                break;
+                return storage[i];
             }
         }
-        return resume;
+        return null;
     }
 
     void delete(String uuid) {
-        int deletedIndex = -1;
-        for (int i = 0; i <= index; i++) {
+        int deletedcountResume = -1;
+        for (int i = 0; i <= countResume; i++) {
             if (storage[i].toString().equals(uuid)) {
-                deletedIndex = i;
+                deletedcountResume = i;
                 break;
             }
         }
-        if (deletedIndex != -1) {
-            for (int i = deletedIndex + 1; i <= index; i++) {
+        if (deletedcountResume != -1) {
+            for (int i = deletedcountResume + 1; i <= countResume; i++) {
                 storage[i - 1] = storage[i];
             }
-            index--;
+            countResume--;
         }
 
     }
@@ -49,10 +50,10 @@ public class ArrayStorage {
      * @return array, contains only Resumes in storage (without null)
      */
     Resume[] getAll() {
-        return Arrays.copyOfRange(storage, 0, index + 1);
+        return Arrays.copyOf(storage, countResume + 1);
     }
 
     int size() {
-        return index + 1;
+        return countResume + 1;
     }
 }
