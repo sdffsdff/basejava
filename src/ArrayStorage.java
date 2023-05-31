@@ -5,10 +5,10 @@ import java.util.Arrays;
  */
 public class ArrayStorage {
     Resume[] storage = new Resume[10000];
-    int countResume = 0;
+    int countResume;
 
     void clear() {
-        for (int i = 0; i < countResume - 1; i++) {
+        for (int i = 0; i < countResume; i++) {
             storage[i] = null;
         }
         countResume = 0;
@@ -17,7 +17,6 @@ public class ArrayStorage {
     void save(Resume r) {
         countResume++;
         storage[countResume - 1] = r;
-
     }
 
     Resume get(String uuid) {
@@ -42,6 +41,7 @@ public class ArrayStorage {
                 storage[i - 1] = storage[i];
             }
             countResume--;
+            storage[countResume] = null;
         }
     }
 
