@@ -7,7 +7,8 @@ import java.util.Arrays;
  * Array based storage for Resumes
  */
 public class ArrayStorage {
-    private final Resume[] storage = new Resume[10000];
+    private final static int STORAGE_LIMIT = 10000;
+    private final Resume[] storage = new Resume[STORAGE_LIMIT];
     private int countResume;
 
     public void clear() {
@@ -15,7 +16,7 @@ public class ArrayStorage {
         countResume = 0;
     }
 
-    private int getStorageIndex(String uuid) {
+    private int getIndex(String uuid) {
         for (int i = 0; i < countResume; i++) {
             if (storage[i].toString().equals(uuid)) {
                 return i;
@@ -25,10 +26,10 @@ public class ArrayStorage {
     }
 
     public void save(Resume r) {
-        if (getStorageIndex(r.getUuid()) != -1) {
-            System.out.println("ERROR:Could not save resume uuid = \" + r.getUuid() + \"\nResume uuid = " + r.getUuid() + " already exists.");
-        } else if (countResume == storage.length) {
+        if (countResume == storage.length) {
             System.out.println("ERROR:Could not save resume uuid = \" + r.getUuid() + \"\nStorage is full.");
+        } else if (getIndex(r.getUuid()) != -1) {
+            System.out.println("ERROR:Could not save resume uuid = \" + r.getUuid() + \"\nResume uuid = " + r.getUuid() + " already exists.");
         } else {
             countResume++;
             storage[countResume - 1] = r;
@@ -36,29 +37,29 @@ public class ArrayStorage {
     }
 
     public Resume get(String uuid) {
-        int storageIndex = getStorageIndex(uuid);
-        if (storageIndex == -1) {
+        int index = getIndex(uuid);
+        if (index == -1) {
             System.out.println("ERROR:Could not get resume uuid = " + uuid + "\nResume uuid = " + uuid + " does not exist.");
             return null;
         } else {
-            return storage[storageIndex];
+            return storage[index];
         }
     }
 
     public void update(Resume resume) {
-        if (getStorageIndex(resume.getUuid()) == -1) {
+        if (getIndex(resume.getUuid()) == -1) {
             System.out.println("ERROR:Could not update resume uuid = " + resume.getUuid() + "\nResume uuid = " + resume.getUuid() + " does not exist.");
         }
+        int index = getIndex(resume.getUuid());
+        storage[index] = resume;
     }
 
     public void delete(String uuid) {
-        int indexForDel = getStorageIndex(uuid);
-        if (indexForDel == -1) {
+        int index = getIndex(uuid);
+        if (index == -1) {
             System.out.println("ERROR:Could not delete resume uuid = " + uuid + "\nResume uuid = " + uuid + " does not exist.");
         } else {
-            for (int i = indexForDel + 1; i < countResume; i++) {
-                storage[i - 1] = storage[i];
-            }
+            System.arraycopy(storage, index + 1, storage, index, storage.length - 1);
             countResume--;
             storage[countResume] = null;
         }
