@@ -31,8 +31,8 @@ public class ArrayStorage {
         } else if (getIndex(r.getUuid()) != -1) {
             System.out.println("ERROR:Could not save resume uuid = \" + r.getUuid() + \"\nResume uuid = " + r.getUuid() + " already exists.");
         } else {
+            storage[countResume] = r;
             countResume++;
-            storage[countResume - 1] = r;
         }
     }
 
@@ -47,10 +47,10 @@ public class ArrayStorage {
     }
 
     public void update(Resume resume) {
-        if (getIndex(resume.getUuid()) == -1) {
+        int index = getIndex(resume.getUuid());
+        if (index == -1) {
             System.out.println("ERROR:Could not update resume uuid = " + resume.getUuid() + "\nResume uuid = " + resume.getUuid() + " does not exist.");
         }
-        int index = getIndex(resume.getUuid());
         storage[index] = resume;
     }
 
@@ -59,7 +59,7 @@ public class ArrayStorage {
         if (index == -1) {
             System.out.println("ERROR:Could not delete resume uuid = " + uuid + "\nResume uuid = " + uuid + " does not exist.");
         } else {
-            System.arraycopy(storage, index + 1, storage, index, storage.length - 1);
+            storage[index] = storage[countResume - 1];
             countResume--;
             storage[countResume] = null;
         }
