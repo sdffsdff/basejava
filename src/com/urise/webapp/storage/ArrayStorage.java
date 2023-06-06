@@ -26,7 +26,7 @@ public class ArrayStorage {
     }
 
     public void save(Resume r) {
-        if (countResume == storage.length) {
+        if (countResume == STORAGE_LIMIT) {
             System.out.println("ERROR:Could not save resume uuid = \" + r.getUuid() + \"\nStorage is full.");
         } else if (getIndex(r.getUuid()) != -1) {
             System.out.println("ERROR:Could not save resume uuid = \" + r.getUuid() + \"\nResume uuid = " + r.getUuid() + " already exists.");
