@@ -17,7 +17,7 @@ public abstract class AbstractArrayStorage implements Storage {
         countResume = 0;
     }
 
-    public Resume get(String uuid) {
+    public final Resume get(String uuid) {
         int index = getIndex(uuid);
         if (index == -1) {
             System.out.println("Resume " + uuid + " not exist");
@@ -26,9 +26,7 @@ public abstract class AbstractArrayStorage implements Storage {
         return storage[index];
     }
 
-    protected abstract int getIndex(String uuid);
-
-    public void update(Resume resume) {
+    public final void update(Resume resume) {
         int index = getIndex(resume.getUuid());
         if (index < 0) {
             System.out.println("ERROR:Could not update resume uuid = " + resume.getUuid() + "\nResume uuid = " + resume.getUuid() + " does not exist.");
@@ -36,28 +34,24 @@ public abstract class AbstractArrayStorage implements Storage {
         storage[index] = resume;
     }
 
-    protected abstract void insert(Resume r, int index);
-
-    public void save(Resume r) {
+    public final void save(Resume r) {
         int index = getIndex(r.getUuid());
         if (countResume == STORAGE_LIMIT) {
             System.out.println("ERROR:Could not save resume uuid = " + r.getUuid() + "\nStorage is full.");
         } else if (index > -1) {
             System.out.println("ERROR:Could not save resume uuid = " + r.getUuid() + "\nResume uuid = " + r.getUuid() + " already exists.");
         } else {
-            insert(r, index);
+            insertResume(r, index);
             countResume++;
         }
     }
 
-    protected abstract void remove(int index);
-
-    public void delete(String uuid) {
+    public final void delete(String uuid) {
         int index = getIndex(uuid);
         if (index < 0) {
             System.out.println("ERROR:Could not delete resume uuid = " + uuid + "\nResume uuid = " + uuid + " does not exist.");
         } else {
-            remove(index);
+            removeResume(index);
             countResume--;
             storage[countResume] = null;
         }
@@ -72,4 +66,10 @@ public abstract class AbstractArrayStorage implements Storage {
     public int size() {
         return countResume;
     }
+
+    protected abstract int getIndex(String uuid);
+
+    protected abstract void insertResume(Resume r, int index);
+
+    protected abstract void removeResume(int index);
 }
