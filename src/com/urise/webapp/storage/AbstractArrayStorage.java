@@ -1,5 +1,8 @@
 package com.urise.webapp.storage;
 
+import com.urise.webapp.exception.ExistStorageException;
+import com.urise.webapp.exception.NotExistStorageException;
+import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 import java.util.Arrays;
 
@@ -20,8 +23,7 @@ public abstract class AbstractArrayStorage implements Storage {
     public final Resume get(String uuid) {
         int index = getIndex(uuid);
         if (index == -1) {
-            System.out.println("Resume " + uuid + " not exist");
-            return null;
+            throw new NotExistStorageException("get", uuid);
         }
         return storage[index];
     }
@@ -29,7 +31,7 @@ public abstract class AbstractArrayStorage implements Storage {
     public final void update(Resume resume) {
         int index = getIndex(resume.getUuid());
         if (index < 0) {
-            System.out.println("ERROR:Could not update resume uuid = " + resume.getUuid() + "\nResume uuid = " + resume.getUuid() + " does not exist.");
+            throw new NotExistStorageException("update", resume.getUuid());
         }
         storage[index] = resume;
     }
@@ -37,9 +39,9 @@ public abstract class AbstractArrayStorage implements Storage {
     public final void save(Resume r) {
         int index = getIndex(r.getUuid());
         if (countResume == STORAGE_LIMIT) {
-            System.out.println("ERROR:Could not save resume uuid = " + r.getUuid() + "\nStorage is full.");
+            throw new StorageException("ERROR:Could not save resume uuid = " + r.getUuid() + "\nStorage is full.", r.getUuid());
         } else if (index > -1) {
-            System.out.println("ERROR:Could not save resume uuid = " + r.getUuid() + "\nResume uuid = " + r.getUuid() + " already exists.");
+            throw new ExistStorageException("save", r.getUuid());
         } else {
             insertResume(r, index);
             countResume++;
@@ -49,13 +51,14 @@ public abstract class AbstractArrayStorage implements Storage {
     public final void delete(String uuid) {
         int index = getIndex(uuid);
         if (index < 0) {
-            System.out.println("ERROR:Could not delete resume uuid = " + uuid + "\nResume uuid = " + uuid + " does not exist.");
+            throw new NotExistStorageException("delete", uuid);
         } else {
             removeResume(index);
             countResume--;
             storage[countResume] = null;
         }
     }
+
     /**
      * @return array, contains only Resumes in storage (without null)
      */
