@@ -16,11 +16,11 @@ public class ArrayStorage extends AbstractArrayStorage {
         return -1;
     }
 
-    protected void insertResume(Resume r, int index){
+    protected void insertResume(Resume r, int index) {
         storage[countResume] = r;
     }
 
-    protected void removeResume(int index){
+    protected void removeResume(int index) {
         storage[index] = storage[countResume - 1];
     }
 }
