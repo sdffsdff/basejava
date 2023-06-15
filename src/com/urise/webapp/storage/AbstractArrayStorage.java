@@ -3,7 +3,6 @@ package com.urise.webapp.storage;
 import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.exception.StorageException;
-import com.urise.webapp.exception.UUIDEmptyException;
 import com.urise.webapp.model.Resume;
 import java.util.Arrays;
 
@@ -24,9 +23,6 @@ public abstract class AbstractArrayStorage implements Storage {
     }
 
     public final Resume get(String uuid) {
-        if (uuid == null || uuid == ""){
-            throw new UUIDEmptyException();
-        }
         int index = getIndex(uuid);
         if (index < 0) {
             throw new NotExistStorageException("get", uuid);
@@ -35,9 +31,6 @@ public abstract class AbstractArrayStorage implements Storage {
     }
 
     public final void update(Resume resume) {
-        if (resume.getUuid() == null || resume.getUuid() == ""){
-            throw new UUIDEmptyException();
-        }
         int index = getIndex(resume.getUuid());
         if (index < 0) {
             throw new NotExistStorageException("update", resume.getUuid());
@@ -46,9 +39,6 @@ public abstract class AbstractArrayStorage implements Storage {
     }
 
     public final void save(Resume r) {
-        if (r.getUuid() == null || r.getUuid() == ""){
-            throw new UUIDEmptyException();
-        }
         int index = getIndex(r.getUuid());
         if (countResume == STORAGE_LIMIT) {
             throw new StorageException("ERROR:Could not save resume uuid = " + r.getUuid() + "\nStorage is full.", r.getUuid());
@@ -61,9 +51,6 @@ public abstract class AbstractArrayStorage implements Storage {
     }
 
     public final void delete(String uuid) {
-        if (uuid == null || uuid == ""){
-            throw new UUIDEmptyException();
-        }
         int index = getIndex(uuid);
         if (index < 0) {
             throw new NotExistStorageException("delete", uuid);
