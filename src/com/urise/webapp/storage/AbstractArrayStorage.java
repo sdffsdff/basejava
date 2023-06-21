@@ -1,7 +1,5 @@
 package com.urise.webapp.storage;
 
-import com.urise.webapp.exception.ExistStorageException;
-import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 import java.util.Arrays;
@@ -9,7 +7,7 @@ import java.util.Arrays;
 /**
  * Array based storage for Resumes
  */
-public abstract class AbstractArrayStorage implements Storage {
+public abstract class AbstractArrayStorage extends AbstractStorage {
     protected static final int STORAGE_LIMIT = 10000;
 
     protected Resume[] storage = new Resume[STORAGE_LIMIT];
@@ -22,42 +20,23 @@ public abstract class AbstractArrayStorage implements Storage {
         }
     }
 
-    public final Resume get(String uuid) {
+    public final Resume getResume(String uuid) {
         int index = getIndex(uuid);
         if (index < 0) {
-            throw new NotExistStorageException("get", uuid);
+            return null;
+        } else {
+            return storage[index];
         }
-        return storage[index];
     }
 
-    public final void update(Resume resume) {
-        int index = getIndex(resume.getUuid());
-        if (index < 0) {
-            throw new NotExistStorageException("update", resume.getUuid());
-        }
+    @Override
+    protected void setResume(int index, Resume resume) {
         storage[index] = resume;
     }
 
-    public final void save(Resume r) {
-        int index = getIndex(r.getUuid());
+    protected void checkStorageLimit(String uuid) {
         if (countResume == STORAGE_LIMIT) {
-            throw new StorageException("ERROR:Could not save resume uuid = " + r.getUuid() + "\nStorage is full.", r.getUuid());
-        } else if (index > -1) {
-            throw new ExistStorageException("save", r.getUuid());
-        } else {
-            insertResume(r, index);
-            countResume++;
-        }
-    }
-
-    public final void delete(String uuid) {
-        int index = getIndex(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException("delete", uuid);
-        } else {
-            removeResume(index);
-            countResume--;
-            storage[countResume] = null;
+            throw new StorageException("ERROR:Could not save resume uuid = " + uuid + "\nStorage is full.", uuid);
         }
     }
 
@@ -71,10 +50,4 @@ public abstract class AbstractArrayStorage implements Storage {
     public int size() {
         return countResume;
     }
-
-    protected abstract int getIndex(String uuid);
-
-    protected abstract void insertResume(Resume r, int index);
-
-    protected abstract void removeResume(int index);
 }
