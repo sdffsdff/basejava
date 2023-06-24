@@ -2,9 +2,10 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.model.Resume;
 import java.util.ArrayList;
+import java.util.List;
 public class ListStorage extends AbstractStorage {
 
-    protected ArrayList<Resume> storage = new ArrayList<>();
+    private List<Resume> storage = new ArrayList<>();
 
     @Override
     protected Object getSearchKey(String uuid) {
@@ -18,11 +19,7 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     protected boolean isExist(Object searchKey) {
-        if ((int) searchKey < 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return (int) searchKey >= 0;
     }
 
     @Override
