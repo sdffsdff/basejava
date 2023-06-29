@@ -4,17 +4,18 @@ import com.urise.webapp.model.Resume;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
-class MapStorageTest extends AbstractStorageTest {
-    private static Storage storage = new MapStorage();
 
-    MapStorageTest() {
+class MapUuidStorageTest extends AbstractStorageTest {
+    private static Storage storage = new MapUuidStorage();
+
+    MapUuidStorageTest() {
         super(storage);
     }
 
     @Test
     void getAll() {
         Resume[] resumeArray = {R1, R2, R3};
-        Resume[] resumeStorageArray = storage.getAll();
+        Object[] resumeStorageArray = storage.getAllSorted().toArray();
         Arrays.sort(resumeStorageArray);
         assertArrayEquals(resumeArray, resumeStorageArray);
     }

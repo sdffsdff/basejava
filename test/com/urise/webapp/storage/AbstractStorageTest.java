@@ -6,6 +6,7 @@ import com.urise.webapp.model.Resume;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 class AbstractStorageTest {
 
     private final Storage storage;
@@ -19,9 +20,9 @@ class AbstractStorageTest {
     protected static final String UUID_3 = "uuid3";
     protected static final String UUID_4 = "uuid4";
     protected static final String UUID_NOT_EXIST = "dummy";
-    protected static final Resume R1 = new Resume(UUID_1);
-    protected static final Resume R2 = new Resume(UUID_2);
-    protected static final Resume R3 = new Resume(UUID_3);
+    protected static final Resume R1 = new Resume(UUID_1, UUID_1);
+    protected static final Resume R2 = new Resume(UUID_2, UUID_2);
+    protected static final Resume R3 = new Resume(UUID_3, UUID_3);
     protected static final Resume R4 = new Resume(UUID_4);
 
     @BeforeEach
@@ -36,7 +37,7 @@ class AbstractStorageTest {
     void clear() {
         storage.clear();
         assertSize(0);
-        assertArrayEquals(new Resume[]{}, storage.getAll());
+        assertArrayEquals(new Resume[]{}, storage.getAllSorted().toArray());
     }
 
     private void assertGet(Resume resume) {
@@ -87,7 +88,7 @@ class AbstractStorageTest {
     @Test
     void getAll() {
         Resume[] resumeArray = {R1, R2, R3};
-        assertArrayEquals(resumeArray, storage.getAll());
+        assertArrayEquals(resumeArray, storage.getAllSorted().toArray());
     }
 
     private void assertSize(int size) {
