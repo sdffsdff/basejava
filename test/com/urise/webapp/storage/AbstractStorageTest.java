@@ -23,7 +23,7 @@ class AbstractStorageTest {
     protected static final Resume R1 = new Resume(UUID_1, UUID_1);
     protected static final Resume R2 = new Resume(UUID_2, UUID_2);
     protected static final Resume R3 = new Resume(UUID_3, UUID_3);
-    protected static final Resume R4 = new Resume(UUID_4);
+    protected static final Resume R4 = new Resume(UUID_4, UUID_4);
 
     @BeforeEach
     void setUp() throws Exception {
@@ -57,7 +57,7 @@ class AbstractStorageTest {
 
     @Test
     void update() {
-        Resume R1Updated = new Resume(UUID_1);
+        Resume R1Updated = new Resume(UUID_1, UUID_1);
         storage.update(R1Updated);
         assertNotSame(R1, storage.get(UUID_1));
         assertGet(R1Updated);
