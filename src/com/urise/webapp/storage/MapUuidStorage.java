@@ -3,37 +3,37 @@ package com.urise.webapp.storage;
 import com.urise.webapp.model.Resume;
 import java.util.*;
 
-public class MapUuidStorage extends AbstractStorage {
+public class MapUuidStorage extends AbstractStorage<String> {
 
     private final Map<String, Resume> storage = new HashMap<>();
 
     @Override
-    protected Object getSearchKey(String uuid) {
+    protected String getSearchKey(String uuid) {
         return uuid;
     }
 
     @Override
-    protected boolean isExist(Object searchKey) {
+    protected boolean isExist(String searchKey) {
         return storage.containsKey((String) searchKey);
     }
 
     @Override
-    protected Resume doGet(Object searchKey) {
+    protected Resume doGet(String searchKey) {
         return storage.get((String) searchKey);
     }
 
     @Override
-    protected void doUpdate(Object searchKey, Resume r) {
+    protected void doUpdate(String searchKey, Resume r) {
         storage.put((String) searchKey, r);
     }
 
     @Override
-    protected void doSave(Object searchKey, Resume r) {
+    protected void doSave(String searchKey, Resume r) {
         storage.put((String) searchKey, r);
     }
 
     @Override
-    protected void doDelete(Object searchKey) {
+    protected void doDelete(String searchKey) {
         storage.remove((String) searchKey);
     }
 
@@ -43,7 +43,7 @@ public class MapUuidStorage extends AbstractStorage {
     }
 
     @Override
-    protected List<Resume> getAll(){
+    protected List<Resume> getAll() {
         return new ArrayList<>(storage.values());
     }
 
