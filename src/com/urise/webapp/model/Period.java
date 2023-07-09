@@ -1,6 +1,7 @@
 package com.urise.webapp.model;
 
 import java.time.LocalDate;
+import java.util.Objects;
 public class Period {
     private String title;
     private String description;
@@ -44,5 +45,23 @@ public class Period {
 
     public void setEnd(LocalDate end) {
         this.end = end;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Period period = (Period) o;
+        return Objects.equals(title, period.title) && Objects.equals(description, period.description) && Objects.equals(start, period.start) && Objects.equals(end, period.end);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, description, start, end);
+    }
+
+    @Override
+    public String toString() {
+        return "title='" + title + ", description='" + description + ", start=" + start + ", end=" + end;
     }
 }
