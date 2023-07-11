@@ -42,17 +42,6 @@ class ResumeTestData {
     static final Company EXPERIENCE_COMPANY_4 = new Company("Luxoft (Deutsche Bank)", "http://www.luxoft.ru/",
             List.of(new Period("Ведущий программист", "Участие в проекте Deutsche Bank CRM (WebLogic, Hibernate, Spring, Spring MVC, SmartGWT, GWT, Jasper, Oracle). Реализация клиентской и серверной части CRM. Реализация RIA-приложения для администрирования, мониторинга и анализа результатов в области алгоритмического трейдинга. JPA, Spring, Spring-MVC, GWT, ExtGWT (GXT), Highstock, Commet, HTML5.",
                     LocalDate.of(2010, 12, 1), LocalDate.of(2012, 4, 1))));
-    static final List<String> EDUCATION_NAMES = List.of("Coursera", "Luxoft", "Siemens AG", "Alcatel");
-    static final List<String> EDUCATION_URLS = List.of("https://www.coursera.org/course/progfun", "http://www.luxoft-training.ru/training/catalog/course.html?ID=22366",
-            "http://www.siemens.ru/", "http://www.alcatel.ru/");
-    static final List<Period> EDUCATION_PERIODS = List.of(new Period(null, "'Functional Programming Principles in Scala' by Martin Odersky",
-                    LocalDate.of(2013, 3, 1), LocalDate.of(2013, 5, 1)),
-            new Period(null, "Курс 'Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.'",
-                    LocalDate.of(2011, 3, 1), LocalDate.of(2011, 4, 1)),
-            new Period(null, "3 месяца обучения мобильным IN сетям (Берлин)",
-                    LocalDate.of(2005, 1, 1), LocalDate.of(2005, 4, 1)),
-            new Period(null, "6 месяцев обучения цифровым телефонным сетям (Москва)",
-                    LocalDate.of(1997, 9, 1), LocalDate.of(1998, 3, 1)));
     static final Company EDUCATION_COMPANY_1 = new Company("Coursera", "https://www.coursera.org/course/progfun",
             List.of(new Period(null, "'Functional Programming Principles in Scala' by Martin Odersky",
                     LocalDate.of(2013, 3, 1), LocalDate.of(2013, 5, 1))));
