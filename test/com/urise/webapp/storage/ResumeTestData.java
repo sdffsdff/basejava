@@ -29,16 +29,19 @@ class ResumeTestData {
             "Инструменты: Maven + plugin development, Gradle, настройка Ngnix ", "администрирование Hudson/Jenkins, Ant + custom task, SoapUI, JPublisher, Flyway, Nagios, iReport, OpenCmis, Bonita, pgBouncer ",
             "Отличное знание и опыт применения концепций ООП, SOA, шаблонов проектрирования, архитектурных шаблонов, UML, функционального программирования ",
             "Родной русский, английский \"upper intermediate\"");
-    static final List<String> EXPERIENCE_NAMES = List.of("Java Online Projects", "Wrike", "RIT Center", "Luxoft (Deutsche Bank)");
-    static final List<String> EXPERIENCE_URLS = List.of("http://javaops.ru/", "https://www.wrike.com/", "", "http://www.luxoft.ru/");
-    static final List<Period> EXPERIENCE_PERIODS = List.of(new Period("Автор проекта", "\"Создание, организация и проведение Java онлайн проектов и стажировок.\"",
-                    LocalDate.of(2013, 10, 1), null),
-            new Period("Старший разработчик (backend)", "Проектирование и разработка онлайн платформы управления проектами Wrike (Java 8 API, Maven, Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis). Двухфакторная аутентификация, авторизация по OAuth1, OAuth2, JWT SSO.",
-                    LocalDate.of(2014, 10, 1), LocalDate.of(2016, 1, 1)),
-            new Period("Java архитектор", "Организация процесса разработки системы ERP для разных окружений: релизная политика, версионирование, ведение CI (Jenkins), миграция базы (кастомизация Flyway), конфигурирование системы (pgBoucer, Nginx), AAA via SSO. Архитектура БД и серверной части системы. Разработка интергационных сервисов: CMIS, BPMN2, 1C (WebServices), сервисов общего назначения (почта, экспорт в pdf, doc, html). Интеграция Alfresco JLAN для online редактирование из браузера документов MS Office. Maven + plugin development, Ant, Apache Commons, Spring security, Spring MVC, Tomcat,WSO2, xcmis, OpenCmis, Bonita, Python scripting, Unix shell remote scripting via ssh tunnels, PL/Python",
-                    LocalDate.of(2012, 4, 1), LocalDate.of(2014, 10, 1)),
-            new Period("Ведущий программист", "Участие в проекте Deutsche Bank CRM (WebLogic, Hibernate, Spring, Spring MVC, SmartGWT, GWT, Jasper, Oracle). Реализация клиентской и серверной части CRM. Реализация RIA-приложения для администрирования, мониторинга и анализа результатов в области алгоритмического трейдинга. JPA, Spring, Spring-MVC, GWT, ExtGWT (GXT), Highstock, Commet, HTML5.",
-                    LocalDate.of(2010, 12, 1), LocalDate.of(2012, 4, 1)));
+
+    static final Company EXPERIENCE_COMPANY_1 = new Company("Java Online Projects", "http://javaops.ru/",
+            List.of(new Period("Автор проекта", "Создание, организация и проведение Java онлайн проектов и стажировок.",
+                    LocalDate.of(2013, 10, 1), null)));
+    static final Company EXPERIENCE_COMPANY_2 = new Company("Wrike", "https://www.wrike.com/",
+            List.of(new Period("Старший разработчик (backend)", "Проектирование и разработка онлайн платформы управления проектами Wrike (Java 8 API, Maven, Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis). Двухфакторная аутентификация, авторизация по OAuth1, OAuth2, JWT SSO.",
+                    LocalDate.of(2014, 10, 1), LocalDate.of(2016, 1, 1))));
+    static final Company EXPERIENCE_COMPANY_3 = new Company("RIT Center", "",
+            List.of(new Period("Java архитектор", "Организация процесса разработки системы ERP для разных окружений: релизная политика, версионирование, ведение CI (Jenkins), миграция базы (кастомизация Flyway), конфигурирование системы (pgBoucer, Nginx), AAA via SSO. Архитектура БД и серверной части системы. Разработка интергационных сервисов: CMIS, BPMN2, 1C (WebServices), сервисов общего назначения (почта, экспорт в pdf, doc, html). Интеграция Alfresco JLAN для online редактирование из браузера документов MS Office. Maven + plugin development, Ant, Apache Commons, Spring security, Spring MVC, Tomcat,WSO2, xcmis, OpenCmis, Bonita, Python scripting, Unix shell remote scripting via ssh tunnels, PL/Python",
+                    LocalDate.of(2012, 4, 1), LocalDate.of(2014, 10, 1))));
+    static final Company EXPERIENCE_COMPANY_4 = new Company("Luxoft (Deutsche Bank)", "http://www.luxoft.ru/",
+            List.of(new Period("Ведущий программист", "Участие в проекте Deutsche Bank CRM (WebLogic, Hibernate, Spring, Spring MVC, SmartGWT, GWT, Jasper, Oracle). Реализация клиентской и серверной части CRM. Реализация RIA-приложения для администрирования, мониторинга и анализа результатов в области алгоритмического трейдинга. JPA, Spring, Spring-MVC, GWT, ExtGWT (GXT), Highstock, Commet, HTML5.",
+                    LocalDate.of(2010, 12, 1), LocalDate.of(2012, 4, 1))));
     static final List<String> EDUCATION_NAMES = List.of("Coursera", "Luxoft", "Siemens AG", "Alcatel");
     static final List<String> EDUCATION_URLS = List.of("https://www.coursera.org/course/progfun", "http://www.luxoft-training.ru/training/catalog/course.html?ID=22366",
             "http://www.siemens.ru/", "http://www.alcatel.ru/");
@@ -50,8 +53,21 @@ class ResumeTestData {
                     LocalDate.of(2005, 1, 1), LocalDate.of(2005, 4, 1)),
             new Period(null, "6 месяцев обучения цифровым телефонным сетям (Москва)",
                     LocalDate.of(1997, 9, 1), LocalDate.of(1998, 3, 1)));
+    static final Company EDUCATION_COMPANY_1 = new Company("Coursera", "https://www.coursera.org/course/progfun",
+            List.of(new Period(null, "'Functional Programming Principles in Scala' by Martin Odersky",
+                    LocalDate.of(2013, 3, 1), LocalDate.of(2013, 5, 1))));
+    static final Company EDUCATION_COMPANY_2 = new Company("Luxoft", "http://www.luxoft-training.ru/training/catalog/course.html?ID=22366",
+            List.of(new Period(null, "Курс 'Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.'",
+                    LocalDate.of(2011, 3, 1), LocalDate.of(2011, 4, 1))));
+    static final Company EDUCATION_COMPANY_3 = new Company("Siemens AG", "http://www.siemens.ru/",
+            List.of(new Period(null, "3 месяца обучения мобильным IN сетям (Берлин)",
+                    LocalDate.of(2005, 1, 1), LocalDate.of(2005, 4, 1))));
+    static final Company EDUCATION_COMPANY_4 = new Company("Alcatel", "http://www.alcatel.ru/",
+            List.of(new Period(null, "6 месяцев обучения цифровым телефонным сетям (Москва)",
+                    LocalDate.of(1997, 9, 1), LocalDate.of(1998, 3, 1))));
     static final List<Section> SECTIONS = List.of(new TextSection(PERSONAL), new TextSection(OBJECTIVE), new ListSection(ACHIEVEMENTS), new ListSection(QUALIFICATIONS),
-            new CompanySection(EXPERIENCE_NAMES, EXPERIENCE_URLS, EXPERIENCE_PERIODS), new CompanySection(EDUCATION_NAMES, EDUCATION_URLS, EDUCATION_PERIODS));
+            new CompanySection(List.of(EXPERIENCE_COMPANY_1, EXPERIENCE_COMPANY_2, EXPERIENCE_COMPANY_3, EXPERIENCE_COMPANY_4)),
+            new CompanySection(List.of(EDUCATION_COMPANY_1, EDUCATION_COMPANY_2, EDUCATION_COMPANY_3, EDUCATION_COMPANY_4)));
 
     public static void main(String[] args) {
         for (ContactType type : ContactType.values()) {

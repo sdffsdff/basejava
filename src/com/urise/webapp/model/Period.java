@@ -62,6 +62,6 @@ public class Period {
 
     @Override
     public String toString() {
-        return "title='" + title + ", description='" + description + ", start=" + start + ", end=" + end;
+        return "title=" + title + ", description=" + description + ", start=" + start + ", end=" + end;
     }
 }

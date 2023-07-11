@@ -4,38 +4,18 @@ import java.util.List;
 import java.util.Objects;
 
 public class CompanySection extends Section {
-    private List<String> names;
-    private List<String> urls;
-    private List<Period> periods;
+    private List<Company> companies;
 
-    public CompanySection(List<String> names, List<String> urls, List<Period> periods) {
-        this.names = names;
-        this.urls = urls;
-        this.periods = periods;
+    public CompanySection(List<Company> companies) {
+        this.companies = companies;
     }
 
-    public List<String> getNames() {
-        return names;
+    public List<Company> getCompanies() {
+        return companies;
     }
 
-    public void setNames(List<String> names) {
-        this.names = names;
-    }
-
-    public List<String> getUrls() {
-        return urls;
-    }
-
-    public void setUrls(List<String> urls) {
-        this.urls = urls;
-    }
-
-    public List<Period> getPeriods() {
-        return periods;
-    }
-
-    public void setPeriods(List<Period> periods) {
-        this.periods = periods;
+    public void setCompanies(List<Company> companies) {
+        this.companies = companies;
     }
 
     @Override
@@ -43,16 +23,16 @@ public class CompanySection extends Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CompanySection that = (CompanySection) o;
-        return Objects.equals(names, that.names) && Objects.equals(urls, that.urls) && Objects.equals(periods, that.periods);
+        return Objects.equals(companies, that.companies);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(names, urls, periods);
+        return Objects.hash(companies);
     }
 
     @Override
     public String toString() {
-        return "names=" + names + ", urls=" + urls + ", periods=" + periods;
+        return companies.toString();
     }
 }
