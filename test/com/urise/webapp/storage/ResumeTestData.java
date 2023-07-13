@@ -58,6 +58,17 @@ class ResumeTestData {
             new CompanySection(List.of(EXPERIENCE_COMPANY_1, EXPERIENCE_COMPANY_2, EXPERIENCE_COMPANY_3, EXPERIENCE_COMPANY_4)),
             new CompanySection(List.of(EDUCATION_COMPANY_1, EDUCATION_COMPANY_2, EDUCATION_COMPANY_3, EDUCATION_COMPANY_4)));
 
+    static Resume createResume(String uuid, String fullName){
+        Resume r = new Resume(uuid, fullName);
+        for (ContactType type : ContactType.values()) {
+            r.setContact(type, CONTACTS.get(type.ordinal()));
+        }
+        for (SectionType type : SectionType.values()) {
+            r.setSection(type, SECTIONS.get(type.ordinal()));
+        }
+        return r;
+    }
+
     public static void main(String[] args) {
         for (ContactType type : ContactType.values()) {
             R1.setContact(type, CONTACTS.get(type.ordinal()));
