@@ -23,14 +23,14 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     public void clear() {
-        for (File file : getAllFiles(directory)) {
+        for (File file : getAllFiles()) {
             doDelete(file);
         }
     }
 
     @Override
     public int size() {
-        return getAllFiles(directory).size();
+        return getAllFiles().size();
     }
 
     @Override
@@ -73,31 +73,29 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected void doDelete(File file) {
-        file.delete();
+        if (!file.delete()){
+            throw new StorageException("IO error", file.getName());
+        }
     }
 
-    protected List<Resume> doCopyAll() {
+    protected List<Resume> getAll() {
         List<Resume> resumes = new ArrayList<>();
-        for (File f : getAllFiles(directory)) {
+        for (File f : getAllFiles()) {
             try {
                 resumes.add(doRead(f));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new StorageException("IO error", f.getName(), e);
             }
         }
         return resumes;
     }
 
-    public List<File> getAllFiles(File rootDirectory) {
-        List<File> resumes = new ArrayList<>();
-        for (File f : rootDirectory.listFiles()) {
-            if (f.isDirectory()) {
-                resumes.addAll(getAllFiles(f));
-            } else {
-                resumes.add(f);
-            }
+    private List<File> getAllFiles() {
+        File[] files = directory.listFiles();
+        if (files == null){
+            throw new StorageException("IO error", "");
         }
-        return resumes;
+        return List.of(files);
     }
 
     protected abstract void doWrite(Resume r, File file) throws IOException;
