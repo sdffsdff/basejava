@@ -81,11 +81,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     protected List<Resume> getAll() {
         List<Resume> resumes = new ArrayList<>();
         for (File f : getAllFiles()) {
-            try {
-                resumes.add(doRead(f));
-            } catch (IOException e) {
-                throw new StorageException("IO error", f.getName(), e);
-            }
+            resumes.add(doGet(f));
         }
         return resumes;
     }
