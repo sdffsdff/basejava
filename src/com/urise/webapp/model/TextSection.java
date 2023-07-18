@@ -2,6 +2,7 @@ package com.urise.webapp.model;
 
 import java.util.Objects;
 public class TextSection extends Section {
+    private static final long serialVersionUID = -3538119032512378701L;
     private String text;
 
     public TextSection(String text) {

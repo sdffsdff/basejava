@@ -5,10 +5,12 @@ import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.Resume;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import java.io.File;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AbstractStorageTest {
 
+    protected static final File STORAGE_DIR = new File("/home/main/hdd/Downloads/storage");
     private final Storage storage;
 
     AbstractStorageTest(Storage storage) {
@@ -41,7 +43,7 @@ class AbstractStorageTest {
     }
 
     private void assertGet(Resume resume) {
-        assertSame(resume, storage.get(resume.getUuid()));
+        assertEquals(resume, storage.get(resume.getUuid()));
     }
 
     @Test
