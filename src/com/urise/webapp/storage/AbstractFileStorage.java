@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 public abstract class AbstractFileStorage extends AbstractStorage<File> {
     private final File directory;
+    private SerializationStrategy serializationStrategy = new ObjectStreamStrategy();
 
     protected AbstractFileStorage(File directory) {
         Objects.requireNonNull(directory, "directory must not be null");
@@ -40,7 +41,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     @Override
     protected void doUpdate(File file, Resume r) {
         try {
-            doWrite(r, new BufferedOutputStream(new FileOutputStream(file)));
+            serializationStrategy.doWrite(r, new BufferedOutputStream(new FileOutputStream(file)));
         } catch (IOException e) {
             throw new StorageException("File write error", file.getName(), e);
         }
@@ -55,7 +56,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     protected void doSave(File file, Resume r) {
         try {
             file.createNewFile();
-            doWrite(r, new BufferedOutputStream(new FileOutputStream(file)));
+            serializationStrategy.doWrite(r, new BufferedOutputStream(new FileOutputStream(file)));
         } catch (IOException e) {
             throw new StorageException("Couldn't create file " + file.getAbsolutePath(), file.getName(), e);
         }
@@ -64,7 +65,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     @Override
     protected Resume doGet(File file) {
         try {
-            return doRead(new BufferedInputStream(new FileInputStream(file)));
+            return serializationStrategy.doRead(new BufferedInputStream(new FileInputStream(file)));
         } catch (IOException e) {
             throw new StorageException("File read error", file.getName(), e);
         }
@@ -92,8 +93,4 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         }
         return List.of(files);
     }
-
-    protected abstract void doWrite(Resume r, OutputStream os) throws IOException;
-
-    protected abstract Resume doRead(InputStream is) throws IOException;
 }

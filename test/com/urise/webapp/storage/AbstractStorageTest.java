@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class AbstractStorageTest {
 
     protected static final File STORAGE_DIR = new File("/home/main/hdd/Downloads/storage");
+    protected static final String STORAGE_PATH = "/home/main/hdd/Downloads/storage";
     private final Storage storage;
 
     AbstractStorageTest(Storage storage) {
