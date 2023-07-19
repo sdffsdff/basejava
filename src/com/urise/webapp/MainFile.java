@@ -7,13 +7,22 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 public class MainFile {
 
-    public static void printDirectory(Path path) {
+    public static void printPathWithSpaces(Path path, int spacesCount){
+        System.out.println(String.format("%" + spacesCount + "s", " ") + path);
+    }
+
+    public static void printDirectory(Path path, int spacesCount) {
+        if (spacesCount == 0) {
+            System.out.println(path);
+        } else {
+            printPathWithSpaces(path, spacesCount);
+        }
         try {
             Files.list(path).forEach(e -> {
                 if (Files.isDirectory(e)) {
-                    printDirectory(e);
+                    printDirectory(e, spacesCount + 4);
                 } else {
-                    System.out.println(e);
+                    printPathWithSpaces(e, spacesCount + 4);
                 }
             });
         } catch (IOException e) {
@@ -49,6 +58,6 @@ public class MainFile {
         System.out.println();
         System.out.println("Recursive traversal of the files in directories and subdirectories");
         Path path = Path.of("./src/com/urise/webapp");
-        printDirectory(path);
+        printDirectory(path, 0);
     }
 }
