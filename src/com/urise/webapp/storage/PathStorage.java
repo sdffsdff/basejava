@@ -9,37 +9,30 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
-public abstract class AbstractPathStorage extends AbstractStorage<Path> {
+public abstract class PathStorage extends AbstractStorage<Path> {
     private Path directory;
     private SerializationStrategy serializationStrategy = new ObjectStreamStrategy();
 
-    protected AbstractPathStorage(String dir) {
+    protected PathStorage(String dir, SerializationStrategy serializationStrategy) {
         directory = Paths.get(dir);
         Objects.requireNonNull(directory, "directory must not be null");
+        Objects.requireNonNull(serializationStrategy, "serializationStrategy must not be null");
         if (!Files.isDirectory(directory) || !Files.isWritable(directory)) {
             throw new IllegalArgumentException(dir + " is not directory or is not writable");
         }
+        this.serializationStrategy = serializationStrategy;
     }
 
     @Override
     public void clear() {
-        try {
-            Files.list(directory).forEach(this::doDelete);
-        } catch (IOException e) {
-            throw new StorageException("Path delete error", null);
-        }
+        getAllFiles().forEach(this::doDelete);
     }
 
     @Override
     public int size() {
-        int size;
-        try {
-            size = (int) Files.list(directory).count();
-        } catch (IOException e) {
-            throw new StorageException("Path size error", null);
-        }
-        return size;
+        return (int) getAllFiles().count();
     }
 
     @Override
@@ -65,10 +58,10 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
     protected void doSave(Path path, Resume r) {
         try {
             Files.createFile(path);
-            serializationStrategy.doWrite(r, new BufferedOutputStream(Files.newOutputStream(path)));
         } catch (IOException e) {
             throw new StorageException("Couldn't create file " + path.toAbsolutePath(), path.toString(), e);
         }
+        doUpdate(path, r);
     }
 
     @Override
@@ -92,11 +85,15 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
     @Override
     protected List<Resume> getAll() {
         List<Resume> list = new ArrayList<>();
-        try {
-            Files.list(directory).forEach(e -> list.add(doGet(e)));
-        } catch (IOException e) {
-            throw new StorageException("Directory read error", null);
-        }
+        getAllFiles().forEach(e -> list.add(doGet(e)));
         return list;
+    }
+
+    private Stream<Path> getAllFiles() {
+        try {
+            return Files.list(directory);
+        } catch (IOException e) {
+            throw new StorageException("Directory read error", "");
+        }
     }
 }
