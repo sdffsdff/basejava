@@ -2,14 +2,16 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
-import com.urise.webapp.strategy.SerializationStrategy;
-import java.io.*;
+import com.urise.webapp.storage.serializationstrategy.SerializationStrategy;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PathStorage extends AbstractStorage<Path> {
@@ -85,9 +87,7 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     protected List<Resume> getAll() {
-        List<Resume> list = new ArrayList<>();
-        getAllFiles().forEach(e -> list.add(doGet(e)));
-        return list;
+        return getAllFiles().map(this::doGet).collect(Collectors.toList());
     }
 
     private Stream<Path> getAllFiles() {

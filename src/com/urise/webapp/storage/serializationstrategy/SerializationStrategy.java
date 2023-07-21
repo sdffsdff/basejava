@@ -1,4 +1,4 @@
-package com.urise.webapp.strategy;
+package com.urise.webapp.storage.serializationstrategy;
 
 import com.urise.webapp.model.Resume;
 import java.io.IOException;
