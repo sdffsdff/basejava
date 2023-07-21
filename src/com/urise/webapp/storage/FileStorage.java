@@ -2,11 +2,13 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
+import com.urise.webapp.strategy.SerializationStrategy;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-public abstract class FileStorage extends AbstractStorage<File> {
+
+public class FileStorage extends AbstractStorage<File> {
     private final File directory;
     private SerializationStrategy serializationStrategy;
 
