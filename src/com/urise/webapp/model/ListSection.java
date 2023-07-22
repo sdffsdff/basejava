@@ -7,6 +7,8 @@ public class ListSection extends Section {
     private static final long serialVersionUID = 6078705745646906522L;
     private List<String> strings;
 
+    public ListSection() {}
+
     public ListSection(List<String> strings) {
         this.strings = strings;
     }

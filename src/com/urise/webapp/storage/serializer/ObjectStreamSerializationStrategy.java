@@ -3,7 +3,7 @@ package com.urise.webapp.storage.serializer;
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 import java.io.*;
-public class ObjectStreamStrategy implements SerializationStrategy {
+public class ObjectStreamSerializationStrategy implements SerializationStrategy {
 
     @Override
     public void doWrite(Resume r, OutputStream os) throws IOException {
