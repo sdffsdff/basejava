@@ -12,26 +12,6 @@ public abstract class AbstractStorage<SK> implements Storage {
     private static final Logger LOG = Logger.getLogger(AbstractStorage.class.getName());
     private static final Comparator<Resume> RESUME_COMPARATOR = Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid);
 
-    private SK getExistingSearchKey(String uuid) {
-        SK searchKey = getSearchKey(uuid);
-        if (isExist(searchKey)) {
-            return searchKey;
-        } else {
-            LOG.warning("Resume " + uuid + " not exist");
-            throw new NotExistStorageException(uuid);
-        }
-    }
-
-    private SK getNotExistingSearchKey(String uuid) {
-        SK searchKey = getSearchKey(uuid);
-        if (!isExist(searchKey)) {
-            return searchKey;
-        } else {
-            LOG.warning("Resume " + uuid + " already exist");
-            throw new ExistStorageException(uuid);
-        }
-    }
-
     public final Resume get(String uuid) {
         LOG.info("Get " + uuid);
         SK searchKey = getExistingSearchKey(uuid);
@@ -76,4 +56,24 @@ public abstract class AbstractStorage<SK> implements Storage {
     protected abstract void doDelete(SK searchKey);
 
     protected abstract List<Resume> getAll();
+
+    private SK getExistingSearchKey(String uuid) {
+        SK searchKey = getSearchKey(uuid);
+        if (isExist(searchKey)) {
+            return searchKey;
+        } else {
+            LOG.warning("Resume " + uuid + " not exist");
+            throw new NotExistStorageException(uuid);
+        }
+    }
+
+    private SK getNotExistingSearchKey(String uuid) {
+        SK searchKey = getSearchKey(uuid);
+        if (!isExist(searchKey)) {
+            return searchKey;
+        } else {
+            LOG.warning("Resume " + uuid + " already exist");
+            throw new ExistStorageException(uuid);
+        }
+    }
 }

@@ -10,6 +10,43 @@ import java.util.Optional;
 
 public class DataStreamSerializationStrategy implements SerializationStrategy {
 
+    @Override
+    public void doWrite(Resume r, OutputStream os) throws IOException {
+        try (DataOutputStream dos = new DataOutputStream(os)) {
+            dos.writeUTF(r.getUuid());
+            dos.writeUTF(r.getFullName());
+            Map<ContactType, String> contacts = r.getContacts();
+            dos.writeInt(contacts.size());
+            for (Map.Entry<ContactType, String> entry : contacts.entrySet()) {
+                dos.writeUTF(entry.getKey().name());
+                dos.writeUTF(entry.getValue());
+            }
+            Map<SectionType, Section> sections = r.getSections();
+            dos.writeInt(sections.size());
+            for (Map.Entry<SectionType, Section> entry : sections.entrySet()) {
+                writeSection(entry, dos);
+            }
+        }
+    }
+
+    @Override
+    public Resume doRead(InputStream is) throws IOException {
+        try (DataInputStream dis = new DataInputStream(is)) {
+            String uuid = dis.readUTF();
+            String fullName = dis.readUTF();
+            Resume resume = new Resume(uuid, fullName);
+            int size = dis.readInt();
+            for (int i = 0; i < size; i++) {
+                resume.setContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
+            }
+            size = dis.readInt();
+            for (int i = 0; i < size; i++) {
+                readSection(dis, resume);
+            }
+            return resume;
+        }
+    }
+
     private void writeTextSection(Map.Entry<SectionType, Section> entry, DataOutputStream dos) throws IOException {
         dos.writeUTF(entry.getValue().toString());
     }
@@ -44,56 +81,37 @@ public class DataStreamSerializationStrategy implements SerializationStrategy {
     }
 
     private void writeSection(Map.Entry<SectionType, Section> entry, DataOutputStream dos) throws IOException {
-        dos.writeUTF(entry.getKey().toString());
-        switch (entry.getKey().toString()) {
-            case "PERSONAL":
-            case "OBJECTIVE":
+        dos.writeUTF(entry.getKey().name());
+        switch (entry.getKey()) {
+            case PERSONAL:
+            case OBJECTIVE:
                 writeTextSection(entry, dos);
                 break;
-            case "ACHIEVEMENT":
-            case "QUALIFICATIONS":
+            case ACHIEVEMENT:
+            case QUALIFICATIONS:
                 writeListSection(entry, dos);
                 break;
-            case "EXPERIENCE":
-            case "EDUCATION":
+            case EXPERIENCE:
+            case EDUCATION:
                 writeCompanySection(entry, dos);
                 break;
         }
     }
 
-    @Override
-    public void doWrite(Resume r, OutputStream os) throws IOException {
-        try (DataOutputStream dos = new DataOutputStream(os)) {
-            dos.writeUTF(r.getUuid());
-            dos.writeUTF(r.getFullName());
-            Map<ContactType, String> contacts = r.getContacts();
-            dos.writeInt(contacts.size());
-            for (Map.Entry<ContactType, String> entry : contacts.entrySet()) {
-                dos.writeUTF(entry.getKey().name());
-                dos.writeUTF(entry.getValue());
-            }
-            Map<SectionType, Section> sections = r.getSections();
-            dos.writeInt(sections.size());
-            for (Map.Entry<SectionType, Section> entry : sections.entrySet()) {
-                writeSection(entry, dos);
-            }
-        }
+    private void readTextSection(DataInputStream dis, Resume resume, SectionType type) throws IOException {
+        resume.setSection(type, new TextSection(dis.readUTF()));
     }
 
-    private void readTextSection(DataInputStream dis, Resume resume, String type) throws IOException {
-        resume.setSection(SectionType.valueOf(type), new TextSection(dis.readUTF()));
-    }
-
-    private void readListSection(DataInputStream dis, Resume resume, String type) throws IOException {
+    private void readListSection(DataInputStream dis, Resume resume, SectionType type) throws IOException {
         List<String> strings = new ArrayList<>();
         int size = dis.readInt();
         for (int i = 0; i < size; i++) {
             strings.add(dis.readUTF());
         }
-        resume.setSection(SectionType.valueOf(type), new ListSection(strings));
+        resume.setSection(type, new ListSection(strings));
     }
 
-    private void readCompanySection(DataInputStream dis, Resume resume, String type) throws IOException {
+    private void readCompanySection(DataInputStream dis, Resume resume, SectionType type) throws IOException {
         List<Company> companies = new ArrayList<>();
         int size = dis.readInt();
         for (int i = 0; i < size; i++) {
@@ -116,42 +134,24 @@ public class DataStreamSerializationStrategy implements SerializationStrategy {
             c.setPeriods(periods);
             companies.add(c);
         }
-        resume.setSection(SectionType.valueOf(type), new CompanySection(companies));
+        resume.setSection(type, new CompanySection(companies));
     }
 
     private void readSection(DataInputStream dis, Resume resume) throws IOException {
-        String type = dis.readUTF();
+        SectionType type = SectionType.valueOf(dis.readUTF());
         switch (type) {
-            case "PERSONAL":
-            case "OBJECTIVE":
+            case PERSONAL:
+            case OBJECTIVE:
                 readTextSection(dis, resume, type);
                 break;
-            case "ACHIEVEMENT":
-            case "QUALIFICATIONS":
+            case ACHIEVEMENT:
+            case QUALIFICATIONS:
                 readListSection(dis, resume, type);
                 break;
-            case "EXPERIENCE":
-            case "EDUCATION":
+            case EXPERIENCE:
+            case EDUCATION:
                 readCompanySection(dis, resume, type);
                 break;
-        }
-    }
-
-    @Override
-    public Resume doRead(InputStream is) throws IOException {
-        try (DataInputStream dis = new DataInputStream(is)) {
-            String uuid = dis.readUTF();
-            String fullName = dis.readUTF();
-            Resume resume = new Resume(uuid, fullName);
-            int size = dis.readInt();
-            for (int i = 0; i < size; i++) {
-                resume.setContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
-            }
-            size = dis.readInt();
-            for (int i = 0; i < size; i++) {
-                readSection(dis, resume);
-            }
-            return resume;
         }
     }
 }
