@@ -14,7 +14,8 @@ public class DataStreamSerializationStrategy implements SerializationStrategy {
         void accept(V v) throws IOException;
     }
 
-    private static <E> void writeWithException(Collection<E> elements, ConsumerWithException writer) throws IOException {
+    private static <E> void writeWithException(Collection<E> elements, DataOutputStream dos) throws IOException {
+        ConsumerWithException<String> writer = dos::writeUTF;
         for (E e : elements) {
             writer.accept(e.toString());
         }
@@ -28,14 +29,13 @@ public class DataStreamSerializationStrategy implements SerializationStrategy {
 
             Map<ContactType, String> contacts = r.getContacts();
             dos.writeInt(contacts.size());
-            ConsumerWithException<String> writer = dos::writeUTF;
             List<Object> contactList = contacts.entrySet().stream().flatMap(e -> Stream.of(e.getKey(), e.getValue())).collect(Collectors.toList());
-            writeWithException(contactList, writer);
+            writeWithException(contactList, dos);
 
             Map<SectionType, Section> sections = r.getSections();
             dos.writeInt(sections.size());
             for (Map.Entry<SectionType, Section> section : sections.entrySet()) {
-                writeSection(section, dos, writer);
+                writeSection(section, dos);
             }
         }
     }
@@ -58,14 +58,14 @@ public class DataStreamSerializationStrategy implements SerializationStrategy {
         }
     }
 
-    private void writeListSection(Map.Entry<SectionType, Section> section, DataOutputStream dos, ConsumerWithException writer) throws IOException {
+    private void writeListSection(Map.Entry<SectionType, Section> section, DataOutputStream dos) throws IOException {
         List<String> strings = ((ListSection) section.getValue()).getStrings();
         int size = strings.size();
         dos.writeInt(size);
-        writeWithException(strings, writer);
+        writeWithException(strings, dos);
     }
 
-    private void writeCompanySection(Map.Entry<SectionType, Section> section, DataOutputStream dos, ConsumerWithException writer) throws IOException {
+    private void writeCompanySection(Map.Entry<SectionType, Section> section, DataOutputStream dos) throws IOException {
         List<Company> companies = ((CompanySection) section.getValue()).getCompanies();
         int size = companies.size();
         dos.writeInt(size);
@@ -74,23 +74,23 @@ public class DataStreamSerializationStrategy implements SerializationStrategy {
                 e.getPeriods().stream().flatMap(p -> Stream.of((Optional.ofNullable(p.getTitle()).orElse("null")), p.getDescription(),
                         p.getStart(), Optional.ofNullable(p.getEnd()).orElse(LocalDate.of(3000, 1, 1)).toString()))
         )).collect(Collectors.toList());
-        writeWithException(list, writer);
+        writeWithException(list, dos);
     }
 
-    private void writeSection(Map.Entry<SectionType, Section> section, DataOutputStream dos, ConsumerWithException writer) throws IOException {
+    private void writeSection(Map.Entry<SectionType, Section> section, DataOutputStream dos) throws IOException {
         dos.writeUTF(section.getKey().name());
         switch (section.getKey()) {
             case PERSONAL:
             case OBJECTIVE:
-                writeWithException(List.of(section.getValue()), writer);
+                writeWithException(List.of(section.getValue()), dos);
                 break;
             case ACHIEVEMENT:
             case QUALIFICATIONS:
-                writeListSection(section, dos, writer);
+                writeListSection(section, dos);
                 break;
             case EXPERIENCE:
             case EDUCATION:
-                writeCompanySection(section, dos, writer);
+                writeCompanySection(section, dos);
                 break;
         }
     }
