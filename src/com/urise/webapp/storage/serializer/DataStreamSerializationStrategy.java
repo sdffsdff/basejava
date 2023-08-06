@@ -3,28 +3,39 @@ package com.urise.webapp.storage.serializer;
 import com.urise.webapp.model.*;
 import java.io.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DataStreamSerializationStrategy implements SerializationStrategy {
+
+    @FunctionalInterface
+    private interface ConsumerWithException<V> {
+        void accept(V v) throws IOException;
+    }
+
+    private static <E> void writeWithException(Collection<E> elements, ConsumerWithException writer) throws IOException {
+        for (E e : elements) {
+            writer.accept(e.toString());
+        }
+    }
 
     @Override
     public void doWrite(Resume r, OutputStream os) throws IOException {
         try (DataOutputStream dos = new DataOutputStream(os)) {
             dos.writeUTF(r.getUuid());
             dos.writeUTF(r.getFullName());
+
             Map<ContactType, String> contacts = r.getContacts();
             dos.writeInt(contacts.size());
-            for (Map.Entry<ContactType, String> entry : contacts.entrySet()) {
-                dos.writeUTF(entry.getKey().name());
-                dos.writeUTF(entry.getValue());
-            }
+            ConsumerWithException<String> writer = dos::writeUTF;
+            List<Object> contactList = contacts.entrySet().stream().flatMap(e -> Stream.of(e.getKey(), e.getValue())).collect(Collectors.toList());
+            writeWithException(contactList, writer);
+
             Map<SectionType, Section> sections = r.getSections();
             dos.writeInt(sections.size());
-            for (Map.Entry<SectionType, Section> entry : sections.entrySet()) {
-                writeSection(entry, dos);
+            for (Map.Entry<SectionType, Section> section : sections.entrySet()) {
+                writeSection(section, dos, writer);
             }
         }
     }
@@ -47,53 +58,39 @@ public class DataStreamSerializationStrategy implements SerializationStrategy {
         }
     }
 
-    private void writeTextSection(Map.Entry<SectionType, Section> entry, DataOutputStream dos) throws IOException {
-        dos.writeUTF(entry.getValue().toString());
-    }
-
-    private void writeListSection(Map.Entry<SectionType, Section> entry, DataOutputStream dos) throws IOException {
-        List<String> strings = ((ListSection) entry.getValue()).getStrings();
+    private void writeListSection(Map.Entry<SectionType, Section> section, DataOutputStream dos, ConsumerWithException writer) throws IOException {
+        List<String> strings = ((ListSection) section.getValue()).getStrings();
         int size = strings.size();
         dos.writeInt(size);
-        for (int i = 0; i < size; i++) {
-            dos.writeUTF(strings.get(i));
-        }
+        writeWithException(strings, writer);
     }
 
-    private void writeCompanySection(Map.Entry<SectionType, Section> entry, DataOutputStream dos) throws IOException {
-        List<Company> companies = ((CompanySection) entry.getValue()).getCompanies();
+    private void writeCompanySection(Map.Entry<SectionType, Section> section, DataOutputStream dos, ConsumerWithException writer) throws IOException {
+        List<Company> companies = ((CompanySection) section.getValue()).getCompanies();
         int size = companies.size();
         dos.writeInt(size);
-        for (int i = 0; i < size; i++) {
-            Company company = companies.get(i);
-            dos.writeUTF(company.getName());
-            dos.writeUTF(company.getWebsite());
-            List<Period> periods = company.getPeriods();
-            dos.writeInt(periods.size());
-            for (int j = 0; j < periods.size(); j++) {
-                Period period = periods.get(j);
-                dos.writeUTF(Optional.ofNullable(period.getTitle()).orElse("null"));
-                dos.writeUTF(period.getDescription());
-                dos.writeUTF(period.getStart().toString());
-                dos.writeUTF(Optional.ofNullable(period.getEnd()).orElse(LocalDate.of(3000, 1, 1)).toString());
-            }
-        }
+        List<Object> list = companies.stream().flatMap(e -> Stream.concat(
+                Stream.of(e.getName(), e.getWebsite(), String.valueOf(e.getPeriods().size())),
+                e.getPeriods().stream().flatMap(p -> Stream.of((Optional.ofNullable(p.getTitle()).orElse("null")), p.getDescription(),
+                        p.getStart(), Optional.ofNullable(p.getEnd()).orElse(LocalDate.of(3000, 1, 1)).toString()))
+        )).collect(Collectors.toList());
+        writeWithException(list, writer);
     }
 
-    private void writeSection(Map.Entry<SectionType, Section> entry, DataOutputStream dos) throws IOException {
-        dos.writeUTF(entry.getKey().name());
-        switch (entry.getKey()) {
+    private void writeSection(Map.Entry<SectionType, Section> section, DataOutputStream dos, ConsumerWithException writer) throws IOException {
+        dos.writeUTF(section.getKey().name());
+        switch (section.getKey()) {
             case PERSONAL:
             case OBJECTIVE:
-                writeTextSection(entry, dos);
+                writeWithException(List.of(section.getValue()), writer);
                 break;
             case ACHIEVEMENT:
             case QUALIFICATIONS:
-                writeListSection(entry, dos);
+                writeListSection(section, dos, writer);
                 break;
             case EXPERIENCE:
             case EDUCATION:
-                writeCompanySection(entry, dos);
+                writeCompanySection(section, dos, writer);
                 break;
         }
     }
@@ -119,7 +116,7 @@ public class DataStreamSerializationStrategy implements SerializationStrategy {
             c.setName(dis.readUTF());
             c.setWebsite(dis.readUTF());
             List<Period> periods = new ArrayList<>();
-            int sizePeriods = dis.readInt();
+            int sizePeriods = Integer.parseInt(dis.readUTF());
             for (int j = 0; j < sizePeriods; j++) {
                 String title = dis.readUTF();
                 if (title.equals("null")) {
