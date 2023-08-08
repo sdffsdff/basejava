@@ -9,33 +9,24 @@ import java.util.stream.Stream;
 
 public class DataStreamSerializationStrategy implements SerializationStrategy {
 
-    @FunctionalInterface
-    private interface ConsumerWithException<V> {
-        void accept(V v) throws IOException;
-    }
-
-    private static <E> void writeWithException(Collection<E> elements, DataOutputStream dos) throws IOException {
-        ConsumerWithException<String> writer = dos::writeUTF;
-        for (E e : elements) {
-            writer.accept(e.toString());
-        }
-    }
-
     @Override
     public void doWrite(Resume r, OutputStream os) throws IOException {
         try (DataOutputStream dos = new DataOutputStream(os)) {
+            ConsumerWithException<List<String>> writer = e -> {
+                writeWithException(e, dos::writeUTF);
+            };
             dos.writeUTF(r.getUuid());
             dos.writeUTF(r.getFullName());
 
             Map<ContactType, String> contacts = r.getContacts();
             dos.writeInt(contacts.size());
-            List<Object> contactList = contacts.entrySet().stream().flatMap(e -> Stream.of(e.getKey(), e.getValue())).collect(Collectors.toList());
-            writeWithException(contactList, dos);
+            List<String> contactList = contacts.entrySet().stream().flatMap(e -> Stream.of(e.getKey().toString(), e.getValue())).collect(Collectors.toList());
+            writer.accept(contactList);
 
             Map<SectionType, Section> sections = r.getSections();
             dos.writeInt(sections.size());
             for (Map.Entry<SectionType, Section> section : sections.entrySet()) {
-                writeSection(section, dos);
+                writeSection(section, dos, writer);
             }
         }
     }
@@ -58,39 +49,50 @@ public class DataStreamSerializationStrategy implements SerializationStrategy {
         }
     }
 
-    private void writeListSection(Map.Entry<SectionType, Section> section, DataOutputStream dos) throws IOException {
+    @FunctionalInterface
+    private interface ConsumerWithException<T> {
+        void accept(T t) throws IOException;
+    }
+
+    private static <T> void writeWithException(Collection<T> elements, ConsumerWithException<T> writer) throws IOException {
+        for (T t : elements) {
+            writer.accept(t);
+        }
+    }
+
+    private <T> void writeListSection(Map.Entry<SectionType, Section> section, DataOutputStream dos, ConsumerWithException<List<String>> writer) throws IOException {
         List<String> strings = ((ListSection) section.getValue()).getStrings();
         int size = strings.size();
         dos.writeInt(size);
-        writeWithException(strings, dos);
+        writer.accept(strings);
     }
 
-    private void writeCompanySection(Map.Entry<SectionType, Section> section, DataOutputStream dos) throws IOException {
+    private void writeCompanySection(Map.Entry<SectionType, Section> section, DataOutputStream dos, ConsumerWithException<List<String>> writer) throws IOException {
         List<Company> companies = ((CompanySection) section.getValue()).getCompanies();
         int size = companies.size();
         dos.writeInt(size);
-        List<Object> list = companies.stream().flatMap(e -> Stream.concat(
-                Stream.of(e.getName(), e.getWebsite(), String.valueOf(e.getPeriods().size())),
+        List<String> listCompanies = companies.stream().flatMap(e -> Stream.concat(
+                Stream.of(e.getName().toString(), e.getWebsite(), String.valueOf(e.getPeriods().size())),
                 e.getPeriods().stream().flatMap(p -> Stream.of((Optional.ofNullable(p.getTitle()).orElse("null")), p.getDescription(),
-                        p.getStart(), Optional.ofNullable(p.getEnd()).orElse(LocalDate.of(3000, 1, 1)).toString()))
+                        p.getStart().toString(), Optional.ofNullable(p.getEnd()).orElse(LocalDate.of(3000, 1, 1)).toString()))
         )).collect(Collectors.toList());
-        writeWithException(list, dos);
+        writer.accept(listCompanies);
     }
 
-    private void writeSection(Map.Entry<SectionType, Section> section, DataOutputStream dos) throws IOException {
+    private void writeSection(Map.Entry<SectionType, Section> section, DataOutputStream dos, ConsumerWithException<List<String>> writer) throws IOException {
         dos.writeUTF(section.getKey().name());
         switch (section.getKey()) {
             case PERSONAL:
             case OBJECTIVE:
-                writeWithException(List.of(section.getValue()), dos);
+                writer.accept(List.of(section.getValue().toString()));
                 break;
             case ACHIEVEMENT:
             case QUALIFICATIONS:
-                writeListSection(section, dos);
+                writeListSection(section, dos, writer);
                 break;
             case EXPERIENCE:
             case EDUCATION:
-                writeCompanySection(section, dos);
+                writeCompanySection(section, dos, writer);
                 break;
         }
     }
